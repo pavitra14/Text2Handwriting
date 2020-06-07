@@ -1,0 +1,75 @@
+<html>
+
+<head>
+	<title>
+		Train your custom Handwriting
+	</title>
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+		integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+</head>
+
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<h2>
+					Train your Custom Handwriting!
+				</h2>
+
+				<h2>
+					<span>Kindly grab a white sheet, and write the following text on it in a clear handwriting. (No
+						doctors please!)</span>
+				</h2>
+				<div>
+					<span>Take a clear picture, No shadows or no hands should be visible, just like a scanned copy.
+						Kindly upload below.</span>
+				</div>
+				<div>
+					<span><em>Avoid cursive handwriting please. Make sure each character/letter is spaced enough.</em></span>
+				</div>
+
+				<div class="jumbotron">
+					<h2>
+						the quick brown fox jumps over the lazy dog<br />THE QUICK BROWN FOX JUMPS OVER THE LAZY
+						DOG<br />! @ # . ? $ % ^ & * : ;<br /> 1 2 3 4 5 6 7 8 9 0
+					</h2>
+				</div>
+				<form role="form" name="fontForm" method="POST" enctype="multipart/form-data">
+					{% if msg %}
+					<h1 style="color: red;">{{ msg }}</h1>
+					{% endif %}
+					<div class="form-group">
+
+						<label for="exampleInputEmail1">
+							Handwriting label/Your first Name
+						</label>
+						<input type="text" class="form-control" id="exampleInputEmail1" name="fontName" required/>
+					</div>
+					<div class="form-group">
+
+						<label for="exampleInputPassword1">
+							Token
+						</label>
+						<input type="password" class="form-control" id="exampleInputPassword1" name="token" required/>
+					</div>
+					<div class="form-group">
+						<label for="file">
+							File input
+						</label>
+						<input type="file" class="form-control-file" id="file" name="file" accept="jpg,png,jpeg" required />
+						<p class="help-block">
+							PNG/JPG Preferred
+						</p>
+					</div>
+					<button type="submit" class="btn btn-primary">
+						Upload
+					</button>
+					<a href="/" class="btn btn-danger">Go back</a>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>
