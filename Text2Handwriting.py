@@ -1,4 +1,5 @@
 from flask import Flask, render_template, flash, request, redirect
+
 from TokenManagement import TokenManager
 import utils
 from werkzeug.utils import secure_filename
@@ -45,7 +46,7 @@ def showCustomHandwritingPage():
         return render_template('custom_handwriting.html', msg="Some Error Occured with image, try again")
     boxes = utils.get_boxes(image)
     b64 = utils.boxes_web(boxes, image)
-    return render_template('custom_progress.html',img=b64, token=token)
+    return render_template('custom_progress.html',img=b64, token=token, filename=path)
 
 @app.route("/extract_handwriting", methods=["POST"])
 def extractHandwriting():
@@ -57,13 +58,19 @@ def extractHandwriting():
         return redirect("/custom_handwriting")
     if not tk.checkToken(token):
         return "Invalid token"
-    
+
     # Extract each letter and save it in it's folder
+    print(filename)
     image = utils.load_image(filename)
     boxes = utils.get_boxes(image)
-    extract = utils.extract_letters(image,boxes,token)
-    
-    
+    processed = {}
+    for char,status in utils.extract_letters(image,boxes,token):
+        processed[char] = status
+        print("Processing {} ".format(char))
+    utils.add_custom_handwriting(tk.getTokenName(token))
+    return processed
+
+
 @app.route("/ajax/load_token", methods=["POST"])
 def load_token():
     token = request.form['token']

@@ -1,10 +1,11 @@
 from TokenManagement import TokenManager
 import utils
-# t = TokenManager()
+# from BackgroundRemoval import processImage
+t = TokenManager()
 # t.createFile()
 # print(t.checkToken("74c92151251901c1ac0f815cb0e67246"))
 # print(t.genToken("Pavitra"))
-# t.printAll()
+t.printAll()
 
 # print(utils.get_handwriting_list())
 

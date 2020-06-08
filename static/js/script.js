@@ -59,9 +59,11 @@ function loadCustomHandwriting()
 			processData: false,
 			contentType: false,
 			success: function(data) {
+				console.log(data);
 				if(data.status == 'valid')
 				{
 					$("#handwritings").append("<option value='"+data.hw_name+"'>"+data.hw_name+"</option>");
+					fontssss.push(data.hw_name);
 				} else {
 					alert("Invalid Token");
 				}

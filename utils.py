@@ -9,9 +9,9 @@ import base64
 import os
 import json
 import pickle
-from BackgroundRemoval import processImage
+# from BackgroundRemoval import processImage
 import shutil
-
+from TokenManagement import TokenManager
 
 
 # allow files of a specific type
@@ -68,15 +68,16 @@ def get_boxes(image: Image) -> dict:
     return boxes
 
 def extract_letters(image: Image, boxes: dict, token: str):
-    path = os.path.join('./static/trained/',token)
-    defaultPath = os.path.join('./static/trained/','defaultText1')
-    try:
-        # create a folder
-        if not os.path.exists(path):
+    tk = TokenManager()
+    hw_name = tk.getTokenName(token);
+    path = os.path.join('./static/trained/',hw_name)
+    defaultPath = os.path.join('./static/trained/','defaultText2')
+    if not os.path.exists(path):
             os.mkdir(path)
-            print(token, "folder created at", path)
-        
-        for i in range(32, 126):
+            print(hw_name, "folder created at", path)
+    for i in range(32, 126):
+        status=False
+        try:
             if i == 96:
                 continue
             char = chr(i)
@@ -84,16 +85,24 @@ def extract_letters(image: Image, boxes: dict, token: str):
             if char in boxes.keys():
                 #TODO
                 x1,y1,x2,y2 = boxes[char]
-                letter = image[y1:y2, x1:x2]
-                output = processImage(letter)
+                output = image[y1:y2, x1:x2]
+                # output = processImage(letter)
                 cv2.imwrite(os.path.join(path,filename_t), output)
+                status=True
             else:
                 source = os.path.join(defaultPath,filename_t)
                 dest = os.path.join(path, filename_t)
-                _ = shutil.copyfile(source,dest)
-        return True
-    except:
-        return False
+                print("copying {} to {}".format(source, dest))
+                shutil.copyfile(source,dest)
+                status=False
+            yield (char,status)
+        except Exception as ex:
+            source = os.path.join(defaultPath,filename_t)
+            dest = os.path.join(path, filename_t)
+            print("copying {} to {}".format(source, dest))
+            shutil.copyfile(source,dest)
+            yield (char,status)
+    return True
 
 def get_base64(image):
     retval, buffer = cv2.imencode(".png", image)
@@ -109,35 +118,7 @@ def boxes_web(boxes: dict, image):
 def get_handwriting_list() -> list:
     path = os.path.join("./static/", "trained")
     output = set(sorted([dI for dI in os.listdir(path) if os.path.isdir(os.path.join(path,dI))]))
-    output = output - set(get_custom_handwriting());
+    print(output)
+    print(get_custom_handwriting())
+    output = output - set(get_custom_handwriting())
     return list(sorted(list(output)))
-
-def countlines(start, lines=0, header=True, begin_start=None):
-    if header:
-        print('{:>10} |{:>10} | {:<20}'.format('ADDED', 'TOTAL', 'FILE'))
-        print('{:->11}|{:->11}|{:->20}'.format('', '', ''))
-
-    for thing in os.listdir(start):
-        thing = os.path.join(start, thing)
-        if os.path.isfile(thing):
-            if thing.endswith('.py'):
-                with open(thing, 'r') as f:
-                    newlines = f.readlines()
-                    newlines = len(newlines)
-                    lines += newlines
-
-                    if begin_start is not None:
-                        reldir_of_thing = '.' + thing.replace(begin_start, '')
-                    else:
-                        reldir_of_thing = '.' + thing.replace(start, '')
-
-                    print('{:>10} |{:>10} | {:<20}'.format(
-                            newlines, lines, reldir_of_thing))
-
-
-    for thing in os.listdir(start):
-        thing = os.path.join(start, thing)
-        if os.path.isdir(thing):
-            lines = countlines(thing, lines, header=False, begin_start=start)
-
-    return lines
